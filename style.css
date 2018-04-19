@@ -23,6 +23,10 @@ body{
    align-items: center;
    border: 1px solid black;
 }
+#top-bar .changeMonth{
+   cursor: pointer;
+   font-size: 18px;
+}
 #top-bar .changeMonth.back{
    padding-left: 20px;
 }
@@ -32,6 +36,7 @@ body{
 #top-bar .month-year{
    font-size: 25px;
    font-weight: bold;
+   text-align: center;
 }
 /* SELECT BAR */
 #select-bar{
