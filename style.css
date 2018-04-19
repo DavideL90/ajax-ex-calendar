@@ -3,3 +3,47 @@
    margin: 0;
    padding: 0;
 }
+body{
+   width: 100vw;
+   height: 100vh;
+   display: flex;
+}
+/* Central container */
+#calendar{
+   width: 1000px;
+   height: 750px;
+   margin: auto;
+   border: 1px solid black;
+}
+/* TOP-BAR */
+#calendar #top-bar{
+   display: flex;
+   height: 100px;
+   justify-content: space-between;
+   align-items: center;
+   border: 1px solid black;
+}
+#top-bar .changeMonth.back{
+   padding-left: 20px;
+}
+#top-bar .changeMonth.forward{
+   padding-right: 20px;
+}
+#top-bar .month-year{
+   font-size: 25px;
+   font-weight: bold;
+}
+/* SELECT BAR */
+#select-bar{
+   text-align: center;
+   height: 30px;
+   line-height: 30px;
+}
+/* LIST OF DAYS */
+#calendar #list-days{
+   height: calc(100% - 130px);
+   border: 1px solid black;
+}
+#list-days .day-element.color-red{
+   color: red;
+}
