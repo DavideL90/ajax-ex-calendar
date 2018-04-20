@@ -106,6 +106,9 @@ $(document).ready(function(){
       $('#top-bar').css('justify-content', 'space-between');
       //take the country code from select
       var codeCountry = $('#country-select').val();
+      //Show the country name on the calendar
+      var countryName = $('#country-select option:selected').text();
+      $('#country-name').text(countryName);
       //make an ajax call to retrieve all the holiday of the year and month by default
       $.ajax({
          url: 'https://holidayapi.com/v1/holidays',
@@ -117,7 +120,6 @@ $(document).ready(function(){
             month: month
          },
          success: function(data){
-            console.log(data);
             //take the array of holidays
             var festa = data.holidays;
             //need to do this check because I can't take the daysInMonth
@@ -134,7 +136,10 @@ $(document).ready(function(){
             //call a function to make a list of the day of the month appears
             generateList(daysInMonth, festa);
          },
-         error: function(){
+         error: function(request, status, error){
+            console.log(request);
+            console.log(status);
+            console.log(error);
             alert('ERROR');
          }
       });
@@ -147,31 +152,33 @@ $(document).ready(function(){
          parsedMonth = '';
          parsedMonth = '0' + month;
          var daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-         var yearMonth = moment(year + '-' + ('0' + month));
-         $('#month').data('num_month', month);
+         var yearMonth = moment(year + '-' + parsedMonth);
          changeMonthName(month);
       }
       else if((month >= 10) && (month <= 12)){
-         daysInMonth = moment(year + '-' + month).daysInMonth();
-         yearMonth = moment(year + '-' + (month));
-         $('#month').data('num_month', month);
+         parsedMonth = '';
+         parsedMonth = '' + month;
+         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
+         yearMonth = moment(year + '-' + parsedMonth);
          changeMonthName(month);
       }
       else{
          month = 1
+         parsedMonth = '';
+         parsedMonth = '0' + month;
          year++;
-         daysInMonth = moment(year + '-' +('0' + month)).daysInMonth();
-         yearMonth = moment(year + '-' + ('0' + month));
+         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
+         yearMonth = moment(year + '-' + parsedMonth);
          changeMonthName(month);
          $('#year').text(year);
       }
-      console.log(daysInMonth);
-      console.log(yearMonth);
       //generate a boolean to see if the date on calendar is before today
       var isBefore = moment(yearMonth).isBefore(actualNow);
       if(isBefore){
          //take the code of the country
          var codeCountry = $('#country-select').val();
+         var countryName = $('#country-select option:selected').text();
+         $('#country-name').text(countryName);
          $.ajax({
             url: 'https://holidayapi.com/v1/holidays',
             method: 'GET',
@@ -184,30 +191,73 @@ $(document).ready(function(){
             success: function(data){
                //take the array of holidays
                var festa = data.holidays;
-               if(month < 10){
-                  parsedMonth = '';
-                  parsedMonth = '0' + month;
-
-                  var daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-
-               }
-               else{
-                  daysInMonth = moment(year + '-' + month).daysInMonth();
-
-
-               }
                generateList(daysInMonth, festa);
             },
-            error: function(){
+            error: function(request, status, error){
+               console.log(request);
+               console.log(status);
+               console.log(error);
                alert('ERROR');
             }
          });
       }
       else{
-         alert('You have to give me money to pay for the API, if you want to see the future');
+         alert('You have to give me the money to pay for the API, if you want to see the future');
          $('.forward').hide();
          $('#list-days').children().remove();
       }
+   });
+   $('.changeMonth.back').click(function(){
+      $('.forward').show();
+      //take the month decremented by one
+      month = decrementMonth(month);
+      if((month != 0) && (month >= 10)){
+         parsedMonth = '';
+         parsedMonth = '' + month;
+         var daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
+         var yearMonth = moment(year + '-' + parsedMonth);
+         $('#month').data('num_month', month);
+         changeMonthName(month);
+      }
+      else if((month != 0) && (month < 10)){
+         parsedMonth = '';
+         parsedMonth = '0' + month;
+         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
+         yearMonth = moment(year + '-' + parsedMonth);
+         changeMonthName(month);
+      }
+      else{
+         month = 12;
+         parsedMonth = '';
+         parsedMonth = '' + month;
+         year--;
+         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
+         yearMonth = moment(year + '-' + parsedMonth);
+         changeMonthName(month);
+         $('#year').text(year);
+      }
+      //take the code of the country
+      var codeCountry = $('#country-select').val();
+      var countryName = $('#country-select option:selected').text();
+      $('#country-name').text(countryName);
+      $.ajax({
+         url: 'https://holidayapi.com/v1/holidays',
+         method: 'GET',
+         data: {
+            key: "d78dd42e-cba8-48c7-8d81-b427ef44442e",
+            country: codeCountry,
+            year: year,
+            month: month
+         },
+         success: function(data){
+            //take the array of holidays
+            var festa = data.holidays;
+            generateList(daysInMonth, festa);
+         },
+         error: function(){
+            alert('ERROR');
+         }
+      });
    });
 });
 //Function to fill the select
@@ -232,7 +282,7 @@ function generateList(monthDays, holiday){
          var day = moment(year + '-' + parsedMonth + '-' + StringDay);
       }
       else{
-         day = moment(year + '-' + (i + 1) + '-' + parsedMonth);
+         day = moment(year + '-' + parsedMonth + '-' + (i + 1));
       }
       //check if the array of holiday is empty
       if(holiday.length != 0){
@@ -266,6 +316,11 @@ function generateList(monthDays, holiday){
 //Function to increment the month of 1
 function incrementMonth(oldMonth){
    var newMonth = parseInt(oldMonth) + 1;
+   return newMonth;
+}
+//Function to decrement month of 1
+function decrementMonth(oldMonth){
+   var newMonth = parseInt(oldMonth) - 1;
    return newMonth;
 }
 //function to change name to the month

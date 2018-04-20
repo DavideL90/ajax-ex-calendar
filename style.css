@@ -17,20 +17,37 @@ body{
 }
 /* TOP-BAR */
 #calendar #top-bar{
-   display: flex;
-   height: 100px;
-   align-items: center;
+   height: 70px;
    border: 1px solid black;
+   line-height: 35px;
 }
-#top-bar .changeMonth{
+#top-bar #navigate-bar{
+   display: flex;
+   /* justify-content: space-between; */
+   align-items: center;
+}
+#top-bar #navigate-bar *{
+   float: left;
+   width: calc(100% / 3);
+}
+#top-bar #navigate-bar::after{
+   content: '';
+   display: table;
+   clear: both;
+}
+#top-bar #navigate-bar .changeMonth{
    cursor: pointer;
    font-size: 18px;
 }
-#top-bar .changeMonth.back{
+#top-bar #navigate-bar #country-name{
+   text-align: center;
+}
+#top-bar #navigate-bar .changeMonth.back{
    padding-left: 20px;
 }
-#top-bar .changeMonth.forward{
+#top-bar  #navigate-bar .changeMonth.forward{
    padding-right: 20px;
+   text-align: right;
 }
 #top-bar .month-year{
    font-size: 25px;
@@ -45,7 +62,7 @@ body{
 }
 /* LIST OF DAYS */
 #calendar #list-days{
-   height: calc(100% - 130px);
+   height: calc(100% - 100px);
    border: 1px solid black;
 }
 #list-days .day-element.color-red{
