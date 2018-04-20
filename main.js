@@ -136,10 +136,7 @@ $(document).ready(function(){
             //call a function to make a list of the day of the month appears
             generateList(daysInMonth, festa);
          },
-         error: function(request, status, error){
-            console.log(request);
-            console.log(status);
-            console.log(error);
+         error: function(xhr){
             alert('ERROR');
          }
       });
@@ -193,10 +190,7 @@ $(document).ready(function(){
                var festa = data.holidays;
                generateList(daysInMonth, festa);
             },
-            error: function(request, status, error){
-               console.log(request);
-               console.log(status);
-               console.log(error);
+            error: function(xhr){
                alert('ERROR');
             }
          });
@@ -205,10 +199,12 @@ $(document).ready(function(){
          alert('You have to give me the money to pay for the API, if you want to see the future');
          $('.forward').hide();
          $('#list-days').children().remove();
+         $('#searchBtn').hide();
       }
    });
    $('.changeMonth.back').click(function(){
       $('.forward').show();
+      $('#searchBtn').show();
       //take the month decremented by one
       month = decrementMonth(month);
       if((month != 0) && (month >= 10)){
@@ -254,7 +250,7 @@ $(document).ready(function(){
             var festa = data.holidays;
             generateList(daysInMonth, festa);
          },
-         error: function(){
+         error: function(xhr){
             alert('ERROR');
          }
       });
