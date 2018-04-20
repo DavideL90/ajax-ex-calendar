@@ -163,6 +163,7 @@ $(document).ready(function(){
          daysInMonth = moment(year + '-' +('0' + month)).daysInMonth();
          yearMonth = moment(year + '-' + ('0' + month));
          changeMonthName(month);
+         $('#year').text(year);
       }
       console.log(daysInMonth);
       console.log(yearMonth);
@@ -201,6 +202,11 @@ $(document).ready(function(){
                alert('ERROR');
             }
          });
+      }
+      else{
+         alert('You have to give me money to pay for the API, if you want to see the future');
+         $('.forward').hide();
+         $('#list-days').children().remove();
       }
    });
 });
@@ -264,6 +270,46 @@ function incrementMonth(oldMonth){
 }
 //function to change name to the month
 function changeMonthName(mese){
-   var monthName = $('#month').data('num_month', mese);
-   console.log(monthName);
+   //take the value of the data of month
+   var monthNum = $('#month').data('num_month');
+   monthNum = mese;;
+   var monthName = $('#month');
+   switch(mese){
+      case 1:
+         monthName.text('Gennaio');
+         break;
+      case 2:
+         monthName.text('Febbraio');
+         break;
+      case 3:
+         monthName.text('Marzo');
+         break;
+      case 4:
+         monthName.text('Aprile');
+         break;
+      case 5:
+         monthName.text('Maggio');
+         break;
+      case 6:
+         monthName.text('Giugno');
+         break;
+      case 7:
+         monthName.text('Luglio');
+         break;
+      case 8:
+         monthName.text('Agosto');
+         break;
+      case 9:
+         monthName.text('Settembre');
+         break;
+      case 10:
+         monthName.text('Ottobre');
+         break;
+      case 11:
+         monthName.text('Novembre');
+         break;
+      case 12:
+         monthName.text('Dicembre');
+         break;
+   }
 }
