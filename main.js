@@ -102,45 +102,52 @@ $(document).ready(function(){
    fillSelectCountry(countriesArray);
    //on button click search for the country holidays in January
    $('#searchBtn').click(function(){
-      //after click make previous and next visible
-      $('.changeMonth').show();
-      $('#top-bar').css('justify-content', 'space-between');
       //take the country code from select
       var codeCountry = $('#country-select').val();
-      //Show the country name on the calendar
-      var countryName = $('#country-select option:selected').text();
-      $('#country-name').text(countryName);
-      //make an ajax call to retrieve all the holiday of the year and month by default
-      $.ajax({
-         url: 'https://holidayapi.com/v1/holidays',
-         method: 'GET',
-         data: {
-            key: "d78dd42e-cba8-48c7-8d81-b427ef44442e",
-            country: codeCountry,
-            year: year,
-            month: month
-         },
-         success: function(data){
-            //take the array of holidays
-            var festa = data.holidays;
-            //need to do this check because I can't take the daysInMonth
-            //if I keep a single value the days method won't work
-            if(month < 10){
-               parsedMonth = '';
-               parsedMonth = '0' + month;
-               var daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-            }
-            else{
-               var daysInMonth = moment(year + '-' + month).daysInMonth();
+      //If I press button without choosing a country I can go ahead
+      if(codeCountry == 'placeholder'){
+         alert('scegli un paese');
+      }
+      else{
 
+         //after click make previous and next visible
+         $('.changeMonth').show();
+         $('#top-bar').css('justify-content', 'space-between');
+         //Show the country name on the calendar
+         var countryName = $('#country-select option:selected').text();
+         $('#country-name').text(countryName);
+         //make an ajax call to retrieve all the holiday of the year and month by default
+         $.ajax({
+            url: 'https://holidayapi.com/v1/holidays',
+            method: 'GET',
+            data: {
+               key: "d78dd42e-cba8-48c7-8d81-b427ef44442e",
+               country: codeCountry,
+               year: year,
+               month: month
+            },
+            success: function(data){
+               //take the array of holidays
+               var festa = data.holidays;
+               //need to do this check because I can't take the daysInMonth
+               //if I keep a single value the days method won't work
+               if(month < 10){
+                  parsedMonth = '';
+                  parsedMonth = '0' + month;
+                  var daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
+               }
+               else{
+                  var daysInMonth = moment(year + '-' + month).daysInMonth();
+
+               }
+               //call a function to make a list of the day of the month appears
+               generateList(daysInMonth, festa);
+            },
+            error: function(xhr){
+               alert('ERROR');
             }
-            //call a function to make a list of the day of the month appears
-            generateList(daysInMonth, festa);
-         },
-         error: function(xhr){
-            alert('ERROR');
-         }
-      });
+         });
+      }
    });
    //When click on Successivo change month
    $('.fa-chevron-right').click(function(){
@@ -273,8 +280,9 @@ function fillSelectCountry(arrCountries){
 //Function to create the list of days
 function generateList(monthDays, holiday){
    //Make the calendar elements empty and remove the previous red color
-   $('.day-element').empty();
-   $('.day-element').removeClass('color-red');
+   var dayElement = $('.day-element');
+   dayElement.children().empty();
+   dayElement.removeClass('color-red');
    //var to take count from which square start
    var squareNum = 0;
    for (var i = 0; i < monthDays; i++) {
@@ -289,12 +297,9 @@ function generateList(monthDays, holiday){
       }
       //take the
       var numDay = day.format('D');
-
-      console.log('giorno del mese' + numDay);
       if(numDay == 1){
          //find which day of the week is every day.
          var dayOfWeek = day.format('d');
-         console.log('giorno della settimana' + dayOfWeek);
          //if the first day is Sunday start from the 7th square
          if(dayOfWeek == 0){
             squareNum = 7;
@@ -303,6 +308,7 @@ function generateList(monthDays, holiday){
             squareNum = dayOfWeek;
          }
       }
+      var numbSquare = $('#' + squareNum);
       //check if the array of holiday is empty
       if(holiday.length != 0){
          var cont = 0;
@@ -317,10 +323,9 @@ function generateList(monthDays, holiday){
             if(isSame){
                var nameOfHoliday = holiday[cont].name;
                console.log(nameOfHoliday);
-               $('#' + squareNum).addClass('color-red');
-               $('#' + squareNum).text((i + 1) + ' - ' + nameOfHoliday);
-               console.log($('#' + squareNum));
-               // listCnt.append('<div class="day-element color-red">' + (i + 1) + ' - ' + holiday[cont].name + ' </div>');
+               numbSquare.addClass('color-red');
+               numbSquare.children('.number_month').text(i + 1);
+               numbSquare.children('.holiday_name').text(nameOfHoliday);
                isFound = true;
             }
             else{
@@ -329,15 +334,11 @@ function generateList(monthDays, holiday){
          }while((!isFound) && (cont < holiday.length));
          //check if date was found. If it wasn't append element normally
          if(!isFound){
-            $('#' + squareNum).text((i + 1));
-
-            // listCnt.append('<div class="day-element">' + (i + 1) + ' </div>');
+            numbSquare.children('.number_month').text(i + 1);
          }
       }
       else{
-         $('#' + squareNum).text((i + 1));
-
-         // listCnt.append('<div class="day-element">' + (i + 1) + ' </div>');
+         numbSquare.children('.number_month').text(i + 1);
       }
       squareNum++;
    }
@@ -401,6 +402,8 @@ function changeMonthName(mese){
 function generateGrid(){
    var grid = $('#list-days');
    for (var i = 0; i < 42; i++) {
-      grid.append('<div id="' + (i+1) + '"class="day-element">' + ' </div>')
+      grid.append('<div id="' + (i+1) + '"class="day-element">' +
+                  '<span class="number_month">' + '</span>' +
+                  '<div class="holiday_name">' + '</div>' + ' </div>')
    }
 }

@@ -90,6 +90,7 @@ body{
    border-radius: 50px;
    padding: 5px 15px;
    margin-left: 10px;
+   transition: all 0.5s ease;
 }
 #select-bar #searchBtn:hover{
    color: white;
@@ -104,19 +105,31 @@ body{
    width: calc(100% / 7);
    min-width: 100px;
    height:20px;
+   font-size: 18px;
 }
 /* LIST OF DAYS */
 #calendar #list-days{
-   height: calc(100% - 100px);
+   height: calc(100% - 155px);
    width: 100%;
 }
 #list-days .day-element.color-red{
-   color: red;
+   color: #d90404;
+   font-family: helvetica;
+}
+#list-days .day-element .number_month{
+   font-size: 22px;
+   font-weight: bold;
+}
+#list-days .day-element .holiday_name{
+   position: absolute;
+   bottom: 0;
+   font-weight: bold;
 }
 #list-days .day-element{
+   position: relative;
    float: left;
    width: calc(100% / 7);
-   height: calc(100% / 6);
+   height: calc(100%  / 6);
    border: 1px solid lightgrey;
    background-color: rgba(204, 224, 223, 0.7);
 }
