@@ -94,6 +94,7 @@ var actualMonth = moment().format('MM');
 //actual month and year
 var actualNow = moment(actualYear + '-' + actualMonth);
 $(document).ready(function(){
+   generateGrid();
    //hide previous and next
    $('.changeMonth').hide();
    $('#top-bar').css('justify-content', 'center');
@@ -202,6 +203,7 @@ $(document).ready(function(){
          $('#searchBtn').hide();
       }
    });
+   //when click on Precedente change month
    $('.changeMonth.back').click(function(){
       $('.forward').show();
       $('#searchBtn').show();
@@ -270,9 +272,14 @@ function fillSelectCountry(arrCountries){
 }
 //Function to create the list of days
 function generateList(monthDays, holiday){
-   var listCnt = $('#list-days');
-   listCnt.children().remove();
+   //Make the calendar elements empty and remove the previous red color
+   $('.day-element').empty();
+   $('.day-element').removeClass('color-red');
+   //var to take count from which square start
+   var squareNum = 0;
    for (var i = 0; i < monthDays; i++) {
+      //check whether the day is minus than ten.
+      //if so append a 0 in front of the number
       if(i < 9){
          var StringDay = '0' + (i+1);
          var day = moment(year + '-' + parsedMonth + '-' + StringDay);
@@ -280,11 +287,27 @@ function generateList(monthDays, holiday){
       else{
          day = moment(year + '-' + parsedMonth + '-' + (i + 1));
       }
+      //take the
+      var numDay = day.format('D');
+
+      console.log('giorno del mese' + numDay);
+      if(numDay == 1){
+         //find which day of the week is every day.
+         var dayOfWeek = day.format('d');
+         console.log('giorno della settimana' + dayOfWeek);
+         //if the first day is Sunday start from the 7th square
+         if(dayOfWeek == 0){
+            squareNum = 7;
+         }
+         else{
+            squareNum = dayOfWeek;
+         }
+      }
       //check if the array of holiday is empty
       if(holiday.length != 0){
          var cont = 0;
          var isFound = false;
-         //this loop check whether the holiday was found
+         //this loop check if the holiday was found
          //inside the array of the API
          do{
             //take the date from the array of holiday
@@ -292,7 +315,12 @@ function generateList(monthDays, holiday){
             //assign to a var the result if the dates are equal
             var isSame = moment(dateFromArr).isSame(day);
             if(isSame){
-               listCnt.append('<div class="day-element color-red">' + (i + 1) + ' - ' + holiday[cont].name + ' </div>');
+               var nameOfHoliday = holiday[cont].name;
+               console.log(nameOfHoliday);
+               $('#' + squareNum).addClass('color-red');
+               $('#' + squareNum).text((i + 1) + ' - ' + nameOfHoliday);
+               console.log($('#' + squareNum));
+               // listCnt.append('<div class="day-element color-red">' + (i + 1) + ' - ' + holiday[cont].name + ' </div>');
                isFound = true;
             }
             else{
@@ -301,12 +329,17 @@ function generateList(monthDays, holiday){
          }while((!isFound) && (cont < holiday.length));
          //check if date was found. If it wasn't append element normally
          if(!isFound){
-            listCnt.append('<div class="day-element">' + (i + 1) + ' </div>');
+            $('#' + squareNum).text((i + 1));
+
+            // listCnt.append('<div class="day-element">' + (i + 1) + ' </div>');
          }
       }
       else{
-         listCnt.append('<div class="day-element">' + (i + 1) + ' </div>');
+         $('#' + squareNum).text((i + 1));
+
+         // listCnt.append('<div class="day-element">' + (i + 1) + ' </div>');
       }
+      squareNum++;
    }
 }
 //Function to increment the month of 1
@@ -362,5 +395,12 @@ function changeMonthName(mese){
       case 12:
          monthName.text('Dicembre');
          break;
+   }
+}
+//function to generate grid
+function generateGrid(){
+   var grid = $('#list-days');
+   for (var i = 0; i < 42; i++) {
+      grid.append('<div id="' + (i+1) + '"class="day-element">' + ' </div>')
    }
 }

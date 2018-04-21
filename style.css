@@ -13,7 +13,6 @@ body{
    width: 1000px;
    height: 750px;
    margin: auto;
-   border: 1px solid black;
 }
 /* TOP-BAR */
 #calendar #top-bar{
@@ -63,8 +62,14 @@ body{
 /* LIST OF DAYS */
 #calendar #list-days{
    height: calc(100% - 100px);
+   width: 100%;
    border: 1px solid black;
 }
 #list-days .day-element.color-red{
    color: red;
+}
+#list-days .day-element{
+   float: left;
+   width: calc(100% / 7);
+   height: calc(100% / 6);
 }
