@@ -143,7 +143,7 @@ $(document).ready(function(){
       });
    });
    //When click on Successivo change month
-   $('.changeMonth.forward').click(function(){
+   $('.fa-chevron-right').click(function(){
       //take the month incremented by one
       month = incrementMonth(month);
       if(month < 10){
@@ -204,7 +204,7 @@ $(document).ready(function(){
       }
    });
    //when click on Precedente change month
-   $('.changeMonth.back').click(function(){
+   $('.fa-chevron-left').click(function(){
       $('.forward').show();
       $('#searchBtn').show();
       //take the month decremented by one

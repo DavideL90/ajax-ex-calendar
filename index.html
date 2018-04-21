@@ -4,6 +4,7 @@
       <meta charset="utf-8">
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js" charset="utf-8"></script>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
       <link rel="stylesheet" href="style.css">
       <title></title>
    </head>
@@ -16,11 +17,11 @@
             </div>
             <div id="navigate-bar">
                <div class="changeMonth back">
-                  Precedente
+                  <i class="fas fa-chevron-left"></i>
                </div>
                <div id="country-name"></div>
                <div class="changeMonth forward">
-                  Successivo
+                  <i class="fas fa-chevron-right"></i>
                </div>
             </div>
          </div>
@@ -29,6 +30,29 @@
                <option value="placeholder" disabled selected> --> Scegli un paese <-- </option>
             </select>
             <button id="searchBtn" type="button" name="button">Search</button>
+         </div>
+         <div id="bar-week">
+            <div class="day-name">
+               Lunedì
+            </div>
+            <div class="day-name">
+               Martedì
+            </div>
+            <div class="day-name">
+               Mercoledì
+            </div>
+            <div class="day-name">
+               Giovedì
+            </div>
+            <div class="day-name">
+               Venerdì
+            </div>
+            <div class="day-name">
+               Sabato
+            </div>
+            <div class="day-name">
+               Domenica
+            </div>
          </div>
          <div id="list-days">
 
