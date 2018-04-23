@@ -87,6 +87,10 @@ var year = $('#year').text();
 var month = $('#month').data('num_month');
 //declaring variable to convert month in string
 var parsedMonth;
+//declaring variable to store the days in the month;
+var daysInMonth;
+//varible to store the code of the country
+var codeCountry;
 //take the actual year to check
 var actualYear = moment().format('YYYY');
 //take the actual month
@@ -100,113 +104,62 @@ $(document).ready(function(){
    $('#top-bar').css('justify-content', 'center');
    //fill the select with all the countries
    fillSelectCountry(countriesArray);
-   //on button click search for the country holidays in January
+
+   //on button click search for the country holidays in January (at the very beginning)
    $('#searchBtn').click(function(){
-      //take the country code from select
-      var codeCountry = $('#country-select').val();
-      //If I press button without choosing a country I can go ahead
+      //take the countries code from select
+      codeCountry = $('#country-select').val();
+      //If I press button without choosing a country I can't go ahead
       if(codeCountry == 'placeholder'){
          alert('scegli un paese');
       }
       else{
-
          //after click make previous and next visible
          $('.changeMonth').show();
+         //adjust the layout of the top bar
          $('#top-bar').css('justify-content', 'space-between');
          //Show the country name on the calendar
          var countryName = $('#country-select option:selected').text();
          $('#country-name').text(countryName);
-         //make an ajax call to retrieve all the holiday of the year and month by default
-         $.ajax({
-            url: 'https://holidayapi.com/v1/holidays',
-            method: 'GET',
-            data: {
-               key: "d78dd42e-cba8-48c7-8d81-b427ef44442e",
-               country: codeCountry,
-               year: year,
-               month: month
-            },
-            success: function(data){
-               //take the array of holidays
-               var festa = data.holidays;
-               //need to do this check because I can't take the daysInMonth
-               //if I keep a single value the days method won't work
-               if(month < 10){
-                  parsedMonth = '';
-                  parsedMonth = '0' + month;
-                  var daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-               }
-               else{
-                  var daysInMonth = moment(year + '-' + month).daysInMonth();
-
-               }
-               //call a function to make a list of the day of the month appears
-               generateList(daysInMonth, festa);
-            },
-            error: function(xhr){
-               alert('ERROR');
-            }
-         });
+         //convert the month into a string;
+         parsedMonth = convertMonth(month);
+         //take the day inside the month
+         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
+         //generate the list of days inside month and take the first square
+         //where the month starts
+         var begin = generateList(daysInMonth);
+         //make an ajax call to retrieve all the holidays in the month
+         findHolidays(daysInMonth, begin);
       }
    });
    //When click on Successivo change month
    $('.fa-chevron-right').click(function(){
       //take the month incremented by one
       month = incrementMonth(month);
-      if(month < 10){
-         parsedMonth = '';
-         parsedMonth = '0' + month;
-         var daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-         var yearMonth = moment(year + '-' + parsedMonth);
-         changeMonthName(month);
-      }
-      else if((month >= 10) && (month <= 12)){
-         parsedMonth = '';
-         parsedMonth = '' + month;
-         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-         yearMonth = moment(year + '-' + parsedMonth);
-         changeMonthName(month);
-      }
-      else{
-         month = 1
-         parsedMonth = '';
-         parsedMonth = '0' + month;
+      if(month > 12){
+         month = 1;
          year++;
-         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-         yearMonth = moment(year + '-' + parsedMonth);
-         changeMonthName(month);
          $('#year').text(year);
       }
-      //generate a boolean to see if the date on calendar is before today
+      //convert month into a string
+      parsedMonth = convertMonth(month);
+      //change name to the actual month
+      changeMonthName(month);
+      var yearMonth = moment(year + '-' + parsedMonth);
       var isBefore = moment(yearMonth).isBefore(actualNow);
       if(isBefore){
-         //take the code of the country
-         var codeCountry = $('#country-select').val();
-         var countryName = $('#country-select option:selected').text();
-         $('#country-name').text(countryName);
-         $.ajax({
-            url: 'https://holidayapi.com/v1/holidays',
-            method: 'GET',
-            data: {
-               key: "d78dd42e-cba8-48c7-8d81-b427ef44442e",
-               country: codeCountry,
-               year: year,
-               month: month
-            },
-            success: function(data){
-               //take the array of holidays
-               var festa = data.holidays;
-               generateList(daysInMonth, festa);
-            },
-            error: function(xhr){
-               alert('ERROR');
-            }
-         });
+         //take the day inside the month
+         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
+         //generate the list of days inside month and take the first square
+         //where the month starts
+         var begin = generateList(daysInMonth);
+         //make an ajax call to retrieve all the holidays in the month
+         findHolidays(daysInMonth, begin);
       }
       else{
          alert('You have to give me the money to pay for the API, if you want to see the future');
          $('.forward').hide();
-         $('#list-days').children().remove();
+         $('.day-element').children().text('');
          $('#searchBtn').hide();
       }
    });
@@ -216,55 +169,25 @@ $(document).ready(function(){
       $('#searchBtn').show();
       //take the month decremented by one
       month = decrementMonth(month);
-      if((month != 0) && (month >= 10)){
-         parsedMonth = '';
-         parsedMonth = '' + month;
-         var daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-         var yearMonth = moment(year + '-' + parsedMonth);
-         $('#month').data('num_month', month);
-         changeMonthName(month);
-      }
-      else if((month != 0) && (month < 10)){
-         parsedMonth = '';
-         parsedMonth = '0' + month;
-         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-         yearMonth = moment(year + '-' + parsedMonth);
-         changeMonthName(month);
-      }
-      else{
+      if(month == 0){
          month = 12;
-         parsedMonth = '';
-         parsedMonth = '' + month;
          year--;
-         daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
-         yearMonth = moment(year + '-' + parsedMonth);
-         changeMonthName(month);
          $('#year').text(year);
       }
-      //take the code of the country
-      var codeCountry = $('#country-select').val();
-      var countryName = $('#country-select option:selected').text();
-      $('#country-name').text(countryName);
-      $.ajax({
-         url: 'https://holidayapi.com/v1/holidays',
-         method: 'GET',
-         data: {
-            key: "d78dd42e-cba8-48c7-8d81-b427ef44442e",
-            country: codeCountry,
-            year: year,
-            month: month
-         },
-         success: function(data){
-            //take the array of holidays
-            var festa = data.holidays;
-            generateList(daysInMonth, festa);
-         },
-         error: function(xhr){
-            alert('ERROR');
-         }
-      });
+      //convert month into a string
+      parsedMonth = convertMonth(month);
+      //change name to the actual month
+      changeMonthName(month);
+      //take the day inside the month
+      daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
+      //generate the list of days inside month and take the first square
+      //where the month starts
+      var begin = generateList(daysInMonth);
+      //make an ajax call to retrieve all the holidays in the month
+      findHolidays(daysInMonth, begin);
    });
 });
+
 //Function to fill the select
 function fillSelectCountry(arrCountries){
    var objKeys = [];
@@ -277,25 +200,47 @@ function fillSelectCountry(arrCountries){
       optNation.append('<option value="' + objKeys[i] + '">' + arrCountries[i][objKeys[i]] + '</option>');
    }
 }
-//Function to create the list of days
-function generateList(monthDays, holiday){
+
+//function to convert the month into a String
+function convertMonth(mese){
+   var convertedMonth = '';
+   if(mese < 10){
+      convertedMonth = '0' + mese;
+   }
+   else{
+      convertedMonth = '' + mese;;
+   }
+   return convertedMonth;
+}
+
+//function to return the date depend the day
+function generateDate(dayToCheck){
+   var StringDay = '';
+   var day;
+   if(dayToCheck <= 9){
+      StringDay = '0' + dayToCheck;
+      day = moment(year + '-' + parsedMonth + '-' + StringDay);
+   }
+   else{
+      StringDay = '' + dayToCheck;
+      day = moment(year + '-' + parsedMonth + '-' + StringDay);
+   }
+   return day;
+}
+
+//function to generate the list of the days in the month
+function generateList(monthDays){
    //Make the calendar elements empty and remove the previous red color
    var dayElement = $('.day-element');
    dayElement.children().empty();
    dayElement.removeClass('color-red');
    //var to take count from which square start
    var squareNum = 0;
+   //variable to return to know at which square my month starts
+   var squareToStart = 0;
    for (var i = 0; i < monthDays; i++) {
-      //check whether the day is minus than ten.
-      //if so append a 0 in front of the number
-      if(i < 9){
-         var StringDay = '0' + (i+1);
-         var day = moment(year + '-' + parsedMonth + '-' + StringDay);
-      }
-      else{
-         day = moment(year + '-' + parsedMonth + '-' + (i + 1));
-      }
-      //take the
+      var day = generateDate(i + 1);
+      //take the number of day
       var numDay = day.format('D');
       if(numDay == 1){
          //find which day of the week is every day.
@@ -303,56 +248,91 @@ function generateList(monthDays, holiday){
          //if the first day is Sunday start from the 7th square
          if(dayOfWeek == 0){
             squareNum = 7;
+            squareToStart = 7;
          }
          else{
             squareNum = dayOfWeek;
+            squareToStart = dayOfWeek;
          }
       }
+      //assign to a variable the number of square
       var numbSquare = $('#' + squareNum);
-      //check if the array of holiday is empty
-      if(holiday.length != 0){
-         var cont = 0;
-         var isFound = false;
-         //this loop check if the holiday was found
-         //inside the array of the API
-         do{
-            //take the date from the array of holiday
-            var dateFromArr = moment(holiday[cont].date);
-            //assign to a var the result if the dates are equal
-            var isSame = moment(dateFromArr).isSame(day);
-            if(isSame){
-               var nameOfHoliday = holiday[cont].name;
-               console.log(nameOfHoliday);
-               numbSquare.addClass('color-red');
-               numbSquare.children('.number_month').text(i + 1);
-               numbSquare.children('.holiday_name').text(nameOfHoliday);
-               isFound = true;
-            }
-            else{
-               cont++;
-            }
-         }while((!isFound) && (cont < holiday.length));
-         //check if date was found. If it wasn't append element normally
-         if(!isFound){
-            numbSquare.children('.number_month').text(i + 1);
-         }
-      }
-      else{
-         numbSquare.children('.number_month').text(i + 1);
-      }
+      numbSquare.children('.number_month').text(i + 1);
       squareNum++;
    }
+   return squareToStart;
 }
+
+// find which element is an holiday and make it red
+function findHolidays(monthDays, start){
+   $.ajax({
+      url: 'https://holidayapi.com/v1/holidays',
+      method: 'GET',
+      data: {
+         key: "d78dd42e-cba8-48c7-8d81-b427ef44442e",
+         country: codeCountry,
+         year: year,
+         month: month
+      },
+      success: function(data){
+         // take the array of holidays
+         var festa = data.holidays;
+         for (var i = 0; i < monthDays; i++) {
+            //set the first element of the calendar where I want to start
+            var numbSquare = $('#' + start);
+            //generate the day for every day of the month;
+            var day = generateDate(i + 1);
+            //check if the array of holiday is empty
+            if(festa.length != 0){
+               var cont = 0;
+               var isFound = false;
+               //this loop check if the holiday was found
+               //inside the array of the API
+               do{
+                  //take the date from the array of holiday
+                  var dateFromArr = moment(festa[cont].date);
+                  //assign to a var the result if the dates are equal
+                  var isSame = moment(dateFromArr).isSame(day);
+                  if(isSame){
+                     var nameOfHoliday = festa[cont].name;
+                     numbSquare.addClass('color-red');
+                     numbSquare.children('.number_month').text(i + 1);
+                     numbSquare.children('.holiday_name').text(nameOfHoliday);
+                     isFound = true;
+                  }
+                  else{
+                     cont++;
+                  }
+               }while((!isFound) && (cont < festa.length));
+               //check if date was found. If it wasn't append element normally
+               if(!isFound){
+                  numbSquare.children('.number_month').text(i + 1);
+               }
+            }
+            else{
+               numbSquare.children('.number_month').text(i + 1);
+            }
+            start++;
+         }
+      },
+      error: function(xhr){
+         alert('ERROR');
+      }
+   });
+}
+
 //Function to increment the month of 1
 function incrementMonth(oldMonth){
-   var newMonth = parseInt(oldMonth) + 1;
+   var newMonth = oldMonth + 1;
    return newMonth;
 }
+
 //Function to decrement month of 1
 function decrementMonth(oldMonth){
    var newMonth = parseInt(oldMonth) - 1;
    return newMonth;
 }
+
 //function to change name to the month
 function changeMonthName(mese){
    //take the value of the data of month
@@ -398,6 +378,7 @@ function changeMonthName(mese){
          break;
    }
 }
+
 //function to generate grid
 function generateGrid(){
    var grid = $('#list-days');
