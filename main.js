@@ -97,7 +97,9 @@ var actualYear = moment().format('YYYY');
 var actualMonth = moment().format('MM');
 //actual month and year
 var actualNow = moment(actualYear + '-' + actualMonth);
+
 $(document).ready(function(){
+   moment.locale('it');
    generateGrid();
    //hide previous and next
    $('.changeMonth').hide();
@@ -132,6 +134,7 @@ $(document).ready(function(){
          findHolidays(daysInMonth, begin);
       }
    });
+
    //When click on Successivo change month
    $('.fa-chevron-right').click(function(){
       //take the month incremented by one
@@ -144,8 +147,10 @@ $(document).ready(function(){
       //convert month into a string
       parsedMonth = convertMonth(month);
       //change name to the actual month
-      changeMonthName(month);
+      // var prova = moment('2018-' + parsedMonth);
+      // changeMonthName(month);
       var yearMonth = moment(year + '-' + parsedMonth);
+      $('#month').text(yearMonth.format('MMMM'));
       var isBefore = moment(yearMonth).isBefore(actualNow);
       if(isBefore){
          //take the day inside the month
@@ -163,6 +168,7 @@ $(document).ready(function(){
          $('#searchBtn').hide();
       }
    });
+
    //when click on Precedente change month
    $('.fa-chevron-left').click(function(){
       $('.forward').show();
@@ -177,7 +183,9 @@ $(document).ready(function(){
       //convert month into a string
       parsedMonth = convertMonth(month);
       //change name to the actual month
-      changeMonthName(month);
+      var yearMonth = moment(year + '-' + parsedMonth);
+      $('#month').text(yearMonth.format('MMMM'));
+      // changeMonthName(month);
       //take the day inside the month
       daysInMonth = moment(year + '-' + parsedMonth).daysInMonth();
       //generate the list of days inside month and take the first square
@@ -331,52 +339,6 @@ function incrementMonth(oldMonth){
 function decrementMonth(oldMonth){
    var newMonth = parseInt(oldMonth) - 1;
    return newMonth;
-}
-
-//function to change name to the month
-function changeMonthName(mese){
-   //take the value of the data of month
-   var monthNum = $('#month').data('num_month');
-   monthNum = mese;;
-   var monthName = $('#month');
-   switch(mese){
-      case 1:
-         monthName.text('Gennaio');
-         break;
-      case 2:
-         monthName.text('Febbraio');
-         break;
-      case 3:
-         monthName.text('Marzo');
-         break;
-      case 4:
-         monthName.text('Aprile');
-         break;
-      case 5:
-         monthName.text('Maggio');
-         break;
-      case 6:
-         monthName.text('Giugno');
-         break;
-      case 7:
-         monthName.text('Luglio');
-         break;
-      case 8:
-         monthName.text('Agosto');
-         break;
-      case 9:
-         monthName.text('Settembre');
-         break;
-      case 10:
-         monthName.text('Ottobre');
-         break;
-      case 11:
-         monthName.text('Novembre');
-         break;
-      case 12:
-         monthName.text('Dicembre');
-         break;
-   }
 }
 
 //function to generate grid
